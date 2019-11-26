@@ -6,6 +6,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
@@ -26,6 +27,8 @@ public class Player implements GameObject {
 	boolean dPressed = false;
 	boolean sPressed = false;
 	boolean aPressed = false;
+	
+	
 	
 	double angle = Math.PI/2;
 		
@@ -91,7 +94,7 @@ public class Player implements GameObject {
             at.rotate(angle);
 
             // 1. translate the object so that you rotate it around the 
-            //    center (easier :))
+            //    centre (easier :))
             at.translate(-16, -16);
 
             // draw the image
@@ -147,6 +150,11 @@ public class Player implements GameObject {
 		default:
 			break;
 		}
+	}
+	
+	public void mouseClicked(int x, int y)
+	{
+		
 	}
 	
 	private String returnKey(KeyEvent e)

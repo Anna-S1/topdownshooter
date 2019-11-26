@@ -10,8 +10,10 @@ public class Projectile implements GameObject {
 	double angle;
 	double xmov;
 	double ymov;
+	int width;
+	int height;
 	
-	public Projectile(int xin,int yin,int spdin, double anglein)
+	public Projectile(int xin,int yin,int spdin, double anglein, int widthin, int heightin)
 	{
 		xmov = spd*Math.sin(angle);
 		ymov = spd*Math.cos(angle);
@@ -19,6 +21,8 @@ public class Projectile implements GameObject {
 		y = yin;
 		spd = spdin;
 		angle = anglein;
+		width = widthin;
+		height = heightin;
 	}
 	
 	@Override
