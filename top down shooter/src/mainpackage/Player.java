@@ -1,13 +1,13 @@
 package mainpackage;
 
 import java.awt.Graphics2D;
+import java.awt.MouseInfo;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-
 import javax.imageio.ImageIO;
 
 public class Player implements GameObject {
@@ -28,19 +28,34 @@ public class Player implements GameObject {
 	boolean sPressed = false;
 	boolean aPressed = false;
 	
-	
+	BufferedImage pBase;
+	BufferedImage pTurret;
 	
 	double angle = Math.PI/2;
-		
-	public Player ()
+	double turretangle = 0;
+	
+	Point mouseCoords;
+	
+	public Player () //this constructor loads both images for the player sprite
 	{
-		
+		try { // try-catch loop in case the file cannot be located
+			BufferedImage temp = ImageIO.read(new File("playerbase.png"));
+			pBase = temp;
+			temp = ImageIO.read(new File("playerturret.png"));
+			pTurret = temp;
+		} catch (IOException e) { //this exception means the file could not be opened or does not exist
+			System.out.println("An Error Occured While Importing The Player Sprite");
+			e.printStackTrace(); //prints the stack trace to help debug
+		}
 	}
 	
-	public void update()
+	public void update() //this method is run before drawing everything every gameloop
 	{
-		xvel = 0;
-		yvel = 0;
+		mouseCoords = MouseInfo.getPointerInfo().getLocation(); //these are the mouse coordinates
+		turretangle = Math.atan2((y+hitheight/2)-mouseCoords.y, (x+hitwidth/2)-mouseCoords.x)-Math.PI/2; //this is the angle the turret faces
+		
+		xvel = 0; //sets x velocity to 0
+		yvel = 0; //sets y velocity to 0
 		if (wPressed)
 			yvel = -1;
 		if (dPressed)
@@ -54,12 +69,15 @@ public class Player implements GameObject {
 		if (aPressed && dPressed)
 			xvel = 0;
 		
+		// ^^ works out which way the player should be moving on this frame ^^
+		
 		xvel = xvel * velmult;
 		yvel = yvel * velmult;
 		x = x + xvel;
 		y = y + yvel;
 		
-		//angle = 0;
+		// ^^ moves the player by the correct amount ^^
+		
 		if (dPressed)
 			angle = Math.PI/2;
 		else if (aPressed)
@@ -77,36 +95,45 @@ public class Player implements GameObject {
 			angle = 2*Math.PI - Math.PI/4;
 		else if (aPressed && sPressed)
 			angle = Math.PI + Math.PI/4;
+		
+		// ^^ works out which angle the player sprite should be facing ^^
 	}
 
 	public void draw(Graphics2D g)
 	{
-		try {
-			BufferedImage pBase = ImageIO.read(new File("playerbase.png"));
-			// create the transform, note that the transformations happen
-            // in reversed order (so check them backwards)
-            AffineTransform at = new AffineTransform();
+		// create the transform, note that the transformations happen
+        // in reversed order (so check them backwards)
+		AffineTransform at = new AffineTransform();
 
-            // 3. translate it to its real position
-            at.translate(x, y);
+        // 3. translate it to its real position
+        at.translate(x, y);
 
-            // 2. do the actual rotation
-            at.rotate(angle);
+        // 2. do the actual rotation
+        at.rotate(angle);
 
-            // 1. translate the object so that you rotate it around the 
-            //    centre (easier :))
-            at.translate(-16, -16);
+        // 1. translate the object so that you rotate it around the 
+        //    centre (easier :))
+        at.translate(-16, -16);
 
-            // draw the image
-            g.drawImage(pBase, at, null);
-            
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			System.out.println("An Error Occured While Drawing The Player");
-			e.printStackTrace();
-		}
-		
-		
+        // draw the image
+        g.drawImage(pBase, at, null);
+        
+        // create the transform, note that the transformations happen
+        // in reversed order (so check them backwards)
+		at = new AffineTransform();
+
+        // 3. translate it to its real position
+        at.translate(x, y);
+
+        // 2. do the actual rotation
+        at.rotate(turretangle);
+
+        // 1. translate the object so that you rotate it around the 
+        //    centre (easier :))
+        at.translate(-16, -16);
+
+        // draw the image
+        g.drawImage(pTurret, at, null);
 	}	
 	
 	public void keyPressed(KeyEvent e)
@@ -128,7 +155,7 @@ public class Player implements GameObject {
 		default:
 			break;
 		}
-		
+		//determines which key has been pressed
 	}
 	
 	public void keyReleased(KeyEvent e)
@@ -149,15 +176,10 @@ public class Player implements GameObject {
 			break;
 		default:
 			break;
-		}
+		} //determines if any keys have been released. this allows the game to have intuitive movement
 	}
 	
-	public void mouseClicked(int x, int y)
-	{
-		
-	}
-	
-	private String returnKey(KeyEvent e)
+	private String returnKey(KeyEvent e) //this function returns the key that was pressed from the keyevent
 	{
 		return KeyEvent.getKeyText(e.getKeyCode());
 	}

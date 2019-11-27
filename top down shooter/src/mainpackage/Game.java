@@ -2,7 +2,10 @@ package mainpackage;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Point;
 import java.awt.RenderingHints;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -13,6 +16,7 @@ import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.Color;
+import java.awt.Cursor;
 
 @SuppressWarnings("serial")
 public class Game extends JPanel 
@@ -21,107 +25,109 @@ public class Game extends JPanel
 	public static final int WINDOWWIDTH = 800;
 	public static final int WINDOWHEIGHT = 600;
 	Player player = new Player();
-	ArrayList<PlayerBullet> playerBullets = new ArrayList<>();
+	ArrayList<PlayerBullet> playerBullets = new ArrayList<>(); //creates an ArrayList that only allows
+	//PlayerBullet objects. This syntax allows the object's methods to still be used.
 	
 	public static void main(String[] args) throws InterruptedException, IOException 
 	{
-		JFrame frame = new JFrame("Top Down Shooter");
-		Game game = new Game();
+		JFrame frame = new JFrame("Top Down Shooter"); //creates a new JFrame object with title
+		Game game = new Game(); //creates a new game object to be displayed on the JFrame
 		frame.add(game);
 		frame.setSize(WINDOWWIDTH,WINDOWHEIGHT);
-		frame.setResizable(true);
-		frame.setVisible(true);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setResizable(true); //stops the window from being resized
+		frame.setVisible(true); //makes the window visible
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //makes the window close when X is pressed
 		
-		//comment
-		
-		while (true)
+		Toolkit toolkit = Toolkit.getDefaultToolkit();
+		Image image = toolkit.getImage("crosshair.png");
+		Cursor c = toolkit.createCustomCursor(image , new Point(16,16), "img");
+		frame.setCursor (c);
+				
+		while (true) //this is the game loop
 		{
-			game.updategame();
-			game.repaint();
-			Thread.sleep(10);
+			game.updategame(); //runs my update function
+			game.repaint(); //runs the paint function again
+			Thread.sleep(10); //makes this thread sleep for 10ms so other threads can run.
 		}
 	}
 
 	@Override
 	public void paint(Graphics g)
 	{
-		super.paint(g);
-		Graphics2D g2d = (Graphics2D) g;
-		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		super.paint(g); //clears the screen of previous paints
+		Graphics2D g2d = (Graphics2D) g; //creates a graphics2d object
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); //turns aa on
 		g2d.setColor(Color.DARK_GRAY);
-		g2d.fillRect(0, 0, 800, 600);
+		g2d.fillRect(0, 0, 800, 600); //creates a background rectangle that is dark gray
 		g2d.setColor(Color.WHITE);
 		player.draw(g2d);
-		for (int i=0; i<(playerBullets.size()); i++)
+		for (int i=0; i<(playerBullets.size()); i++) //iterates through the playerBullets ArrayList
 		{
-			playerBullets.get(i).draw(g2d);
+			playerBullets.get(i).draw(g2d); //runs the draw method of each object in the ArrayList
 		}
 		
 	}
 	
 	private void updategame()
 	{
-		player.update();
-		for (int i=0; i<(playerBullets.size()); i++)
+		player.update(); //runs the player object's update method
+		for (int i=0; i<(playerBullets.size()); i++) //iterates through the ArrayList
 		{
-			playerBullets.get(i).update();
+			playerBullets.get(i).update(); //runs the update method for each bullet
+			if (playerBullets.get(i).offScreen) //if the bullet's offscreen attribute is true
+				playerBullets.remove(i); //remove it from the ArrayList, since this is its only reference,
+					//the garbage collector should remove it
 		}
 	}
 	
-	public Game() { //constructor that adds a key listener for control of the game
+	public Game() { //constructor that adds a key and mouse listener for control of the game
 		addKeyListener(new KeyListener() {
 			@Override
-			public void keyTyped(KeyEvent e) {
+			public void keyTyped(KeyEvent e) {}
+
+			@Override
+			public void keyReleased(KeyEvent e) { //when a key is released
+				player.keyReleased(e); //run the player method keyReleased
 			}
 
 			@Override
-			public void keyReleased(KeyEvent e) {
-				player.keyReleased(e);
-			}
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-				player.keyPressed(e);
+			public void keyPressed(KeyEvent e) { //when a key is being pushed down
+				player.keyPressed(e); //run the player method KeyPressed
 			}
 		});
-		addMouseListener(new MouseListener() {
+		addMouseListener(new MouseListener() { //this is a mouse listener to detect mouse inputs
 
 			@Override
-			public void mouseClicked(MouseEvent e) {
-				// TODO Auto-generated method stub
-				int xclick = e.getX();
-				int yclick = e.getY();
-				double angle = Math.atan2(player.y-yclick, player.x-xclick) + Math.PI/2;
-				playerBullets.add(new PlayerBullet(player.x, player.y, 5, angle));
+			public void mouseClicked(MouseEvent e) { //when any of the mouse buttons are clicked
+				int xclick = e.getX(); //x coordinate of the click
+				int yclick = e.getY(); //y coordinate of the click
+				double angle = Math.atan2(player.y-yclick, player.x-xclick)+Math.PI;
+				//gets the angle between the player and the click
+				playerBullets.add(new PlayerBullet(player.x, player.y, 5, angle)); //spawns a new player bullet
 			}
 
 			@Override
 			public void mousePressed(MouseEvent e) {
-				// TODO Auto-generated method stub
 				
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				// TODO Auto-generated method stub
 				
 			}
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				// TODO Auto-generated method stub
 				
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				// TODO Auto-generated method stub
 				
 			}
 			
 		});
-		setFocusable(true);
+		setFocusable(true); //allows both of the listeners to be focused
 	}
 	
 }
