@@ -22,11 +22,12 @@ import java.awt.Cursor;
 public class Game extends JPanel 
 {
 
-	public static final int WINDOWWIDTH = 800;
-	public static final int WINDOWHEIGHT = 600;
+	public static final int WINDOWWIDTH = 1280;
+	public static final int WINDOWHEIGHT = 960;
 	Player player = new Player();
 	ArrayList<PlayerBullet> playerBullets = new ArrayList<>(); //creates an ArrayList that only allows
 	//PlayerBullet objects. This syntax allows the object's methods to still be used.
+	Map map;
 	
 	public static void main(String[] args) throws InterruptedException, IOException 
 	{
@@ -38,11 +39,14 @@ public class Game extends JPanel
 		frame.setVisible(true); //makes the window visible
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //makes the window close when X is pressed
 		
-		Toolkit toolkit = Toolkit.getDefaultToolkit();
-		Image image = toolkit.getImage("crosshair.png");
-		Cursor c = toolkit.createCustomCursor(image , new Point(16,16), "img");
-		frame.setCursor (c);
-				
+		Toolkit toolkit = Toolkit.getDefaultToolkit(); //creates a toolkit
+		Image image = toolkit.getImage("crosshair.png"); //imports the cursor image
+		Cursor c = toolkit.createCustomCursor(image , new Point(16,16), "img"); //imports the cursor image as a cursor
+		//and it sets the cursor centre as 16,16
+		frame.setCursor (c); //sets the crosshair as the current cursor
+		
+		
+		
 		while (true) //this is the game loop
 		{
 			game.updategame(); //runs my update function
@@ -58,9 +62,10 @@ public class Game extends JPanel
 		Graphics2D g2d = (Graphics2D) g; //creates a graphics2d object
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); //turns aa on
 		g2d.setColor(Color.DARK_GRAY);
-		g2d.fillRect(0, 0, 800, 600); //creates a background rectangle that is dark gray
+		g2d.fillRect(0, 0, WINDOWWIDTH, WINDOWHEIGHT); //creates a background rectangle that is dark gray
 		g2d.setColor(Color.WHITE);
 		player.draw(g2d);
+		map.draw(g2d);
 		for (int i=0; i<(playerBullets.size()); i++) //iterates through the playerBullets ArrayList
 		{
 			playerBullets.get(i).draw(g2d); //runs the draw method of each object in the ArrayList
@@ -81,6 +86,16 @@ public class Game extends JPanel
 	}
 	
 	public Game() { //constructor that adds a key and mouse listener for control of the game
+		
+		try {
+			Map map2 = new Map("level1.json", 32);
+			map = map2;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println("Error: " + e.getMessage());
+			e.printStackTrace();
+		}
+		
 		addKeyListener(new KeyListener() {
 			@Override
 			public void keyTyped(KeyEvent e) {}

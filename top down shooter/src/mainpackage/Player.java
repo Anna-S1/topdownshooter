@@ -16,7 +16,7 @@ public class Player implements GameObject {
 	int y = 300;
 	int xvel = 0;
 	int yvel = 0;
-	int velmult = 3;
+	int velmult = 2;
 	
 	int hitx = x+4;
 	int hity = y+4;
