@@ -44,4 +44,9 @@ public class SpriteSheet { //this class assumes sprite sheets are only horizonta
 		}
 		return x;
 	}
+	
+	public BufferedImage getSpecificSprite(int num)
+	{
+		return (sheet.getSubimage((num*tileWidth), 0, tileWidth, tileHeight));
+	}
 }

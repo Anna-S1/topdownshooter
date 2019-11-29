@@ -8,12 +8,14 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+
 import javax.imageio.ImageIO;
 
-public class Player implements GameObject {
+public class Player {
 	
-	int x = 400;
-	int y = 300;
+	int x = 0;
+	int y = 0;
 	int xvel = 0;
 	int yvel = 0;
 	int velmult = 2;
@@ -27,6 +29,7 @@ public class Player implements GameObject {
 	boolean dPressed = false;
 	boolean sPressed = false;
 	boolean aPressed = false;
+	boolean spacePressed = false;
 	
 	BufferedImage pBase;
 	BufferedImage pTurret;
@@ -35,6 +38,8 @@ public class Player implements GameObject {
 	double turretangle = 0;
 	
 	Point mouseCoords;
+	
+	ArrayList<Mine> mines = new ArrayList();
 	
 	public Player () //this constructor loads both images for the player sprite
 	{
@@ -49,7 +54,7 @@ public class Player implements GameObject {
 		}
 	}
 	
-	public void update() //this method is run before drawing everything every gameloop
+	public void update(Map m) //this method is run before drawing everything every gameloop
 	{
 		mouseCoords = MouseInfo.getPointerInfo().getLocation(); //these are the mouse coordinates
 		turretangle = Math.atan2((y+hitheight/2)-mouseCoords.y, (x+hitwidth/2)-mouseCoords.x)-Math.PI/2; //this is the angle the turret faces
@@ -73,8 +78,28 @@ public class Player implements GameObject {
 		
 		xvel = xvel * velmult;
 		yvel = yvel * velmult;
-		x = x + xvel;
-		y = y + yvel;
+		
+		
+		//collision detection
+		boolean collidedx = false;
+		boolean collidedy = false;
+		for (int i=0; i<m.walls.size(); i++)
+		{
+			if (AABBCollision(m.walls.get(i).x+12, m.walls.get(i).y+12, m.tileSize, m.tileSize, x+xvel, y, hitwidth, hitheight))
+				collidedx = true;
+			if (AABBCollision(m.walls.get(i).x+12, m.walls.get(i).y+12, m.tileSize, m.tileSize, x, y+yvel, hitwidth, hitheight))
+				collidedy = true;
+		}
+		if (!collidedx)
+		{
+			x = x + xvel;
+			hitx = hitx + xvel;
+		}
+		if (!collidedy)
+		{
+			y = y + yvel;
+			hity = hity+yvel;
+		}
 		
 		// ^^ moves the player by the correct amount ^^
 		
@@ -152,6 +177,11 @@ public class Player implements GameObject {
 		case "A":
 			aPressed = true;
 			break;
+		case "Space":
+			if (spacePressed==false)
+			{
+				mines.add(new Mine(x, y));
+			}
 		default:
 			break;
 		}
@@ -174,6 +204,8 @@ public class Player implements GameObject {
 		case "A":
 			aPressed = false;
 			break;
+		case "Space":
+			spacePressed = false;
 		default:
 			break;
 		} //determines if any keys have been released. this allows the game to have intuitive movement
@@ -182,6 +214,14 @@ public class Player implements GameObject {
 	private String returnKey(KeyEvent e) //this function returns the key that was pressed from the keyevent
 	{
 		return KeyEvent.getKeyText(e.getKeyCode());
+	}
+	
+	private boolean AABBCollision(int x, int y, int w, int h, int x2, int y2, int w2, int h2)
+	{		
+		if (x2+w2>x && x2<x+w && y2+h2>y && y2<y+h)
+			return true;
+		else
+			return false;
 	}
 	
 }

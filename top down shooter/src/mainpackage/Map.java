@@ -1,6 +1,7 @@
 package mainpackage;
 
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -14,10 +15,14 @@ public class Map {
 	int[][] mapArray;
 	int mapHeight;
 	int mapWidth;
-	ArrayList<BufferedImage> mapSprites;
+	public ArrayList<BufferedImage> mapSprites;
 	int tileSize;
+	ArrayList<Wall> walls;
+	SpriteSheet mapSpriteSheet;
+	int xoffset;
+	int yoffset;
 	
-	public Map(String path, int ts) throws Exception
+	public Map(String path, int ts, Player p) throws Exception
 	{
 		tileSize = ts; //sets the tilesize
 		JSONObject jo = (JSONObject) new JSONParser().parse(new FileReader(path)); 
@@ -40,24 +45,49 @@ public class Map {
 			mapArray[h][w] = Math.toIntExact((long)  rawMap.get(i));
 		}
 		
+		xoffset = 1280/2 - ((mapWidth*tileSize) / 2);
+		yoffset = 720/2 - ((mapHeight*tileSize) / 2);
+		
+		p.x = xoffset + 6*(tileSize/4);
+		p.y = yoffset + 6*(tileSize/4);
+		
 		//IMPORT IMAGES
 		
-		SpriteSheet mapSpriteSheet = new SpriteSheet("tanktiles.png",32,32);
+		mapSpriteSheet = new SpriteSheet("tanktiles.png",32,32);
 		mapSprites = mapSpriteSheet.getSprites();
+		
+		//GENERATE WALLS
+		 walls = createWalls();
+		
 	}
 	
 	public void draw(Graphics2D g)
 	{
+		for (Wall el : walls)
+		{
+			el.draw(g, this);
+		}
+	}
+	
+	private ArrayList<Wall> createWalls()
+	{
+		ArrayList<Wall> walls = new ArrayList<Wall>();
 		for (int i=0; i<mapHeight; i++)
 		{
 			for (int j=0; j<mapWidth; j++)
 			{
-				if (mapArray[i][j] != 0)
+				if (mapArray[i][j]!=0)
 				{
-					g.drawImage(mapSprites.get(mapArray[i][j]-1), j*tileSize, i*tileSize, null);
+					walls.add(new Wall(j*tileSize+xoffset, i*tileSize+yoffset, (mapArray[i][j])-1));
 				}
 			}
 		}
+		return walls;
+	}
+	
+	public BufferedImage getImage(int num)
+	{
+		return mapSprites.get(num);
 	}
 	
 }

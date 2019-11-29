@@ -1,0 +1,78 @@
+private ArrayList<Wall> createWalls()
+	{
+		ArrayList<Wall> walls = new ArrayList<Wall>();
+		ArrayList<Point> doneTiles = new ArrayList<Point>();
+		for (int i=0; i<mapHeight; i++)
+		{
+			for (int j=0; j<mapHeight; j++)
+			{
+				if (mapArray[i][j]!=0 && (!doneTiles.contains(new Point(i,j))))//if the checked value is not 0 (if its a wall of some type)
+				{
+					doneTiles.add(new Point(i,j));
+					int wallType = mapArray[i][j];
+					
+					if (i+1<mapHeight)
+					{
+						if (mapArray[i+1][j] == wallType) //vertical walls
+						{
+							int count = 1;
+							doneTiles.add(new Point(i+1,j));
+							while (true)
+							{
+								if (i+count<mapHeight)
+								{
+									if (mapArray[i+count][j] == wallType)
+									{
+										doneTiles.add(new Point(i+count,j));
+										count = count+1;
+									}else
+									{
+										walls.add(new Wall(i*tileSize, j*tileSize, wallType, 1, count, tileSize));
+										break;
+									}
+								}else
+								{
+									walls.add(new Wall(i*tileSize, j*tileSize, wallType, 1, count, tileSize));
+									break;
+								}
+							}
+							continue;
+						}
+					}else
+						walls.add(new Wall(i*tileSize, j*tileSize, wallType, 1, 1, tileSize));
+					
+					if (j+1<mapWidth)
+					{
+						if (mapArray[i][j+1] == wallType) //horizontal walls
+						{
+							int count = 1;
+							doneTiles.add(new Point(i,j+1));
+							while (true)
+							{
+								if (j+count<mapWidth)
+								{
+									if (mapArray[i][j+count] == wallType)
+									{
+										doneTiles.add(new Point(i,j+count));
+										count = count+1;
+									}else
+									{
+										walls.add(new Wall(i*tileSize, j*tileSize, wallType, count, 1, tileSize));
+										break;
+									}
+								}else
+								{
+									walls.add(new Wall(i*tileSize, j*tileSize, wallType, count, 1, tileSize));
+									break;
+								}
+							}
+							continue;
+						}
+					}else
+						walls.add(new Wall(i*tileSize, j*tileSize, wallType, 1, 1, tileSize));
+				}
+			}
+		}
+		return walls;
+		
+	}

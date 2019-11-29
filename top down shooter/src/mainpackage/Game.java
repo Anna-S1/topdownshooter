@@ -23,7 +23,7 @@ public class Game extends JPanel
 {
 
 	public static final int WINDOWWIDTH = 1280;
-	public static final int WINDOWHEIGHT = 960;
+	public static final int WINDOWHEIGHT = 720;
 	Player player = new Player();
 	ArrayList<PlayerBullet> playerBullets = new ArrayList<>(); //creates an ArrayList that only allows
 	//PlayerBullet objects. This syntax allows the object's methods to still be used.
@@ -64,6 +64,10 @@ public class Game extends JPanel
 		g2d.setColor(Color.DARK_GRAY);
 		g2d.fillRect(0, 0, WINDOWWIDTH, WINDOWHEIGHT); //creates a background rectangle that is dark gray
 		g2d.setColor(Color.WHITE);
+		for (int i=0; i<player.mines.size(); i++)
+		{
+			player.mines.get(i).draw(g2d);
+		}
 		player.draw(g2d);
 		map.draw(g2d);
 		for (int i=0; i<(playerBullets.size()); i++) //iterates through the playerBullets ArrayList
@@ -71,24 +75,32 @@ public class Game extends JPanel
 			playerBullets.get(i).draw(g2d); //runs the draw method of each object in the ArrayList
 		}
 		
+		
 	}
 	
 	private void updategame()
 	{
-		player.update(); //runs the player object's update method
+		player.update(map); //runs the player object's update method
 		for (int i=0; i<(playerBullets.size()); i++) //iterates through the ArrayList
 		{
-			playerBullets.get(i).update(); //runs the update method for each bullet
+			playerBullets.get(i).update(map); //runs the update method for each bullet
 			if (playerBullets.get(i).offScreen) //if the bullet's offscreen attribute is true
 				playerBullets.remove(i); //remove it from the ArrayList, since this is its only reference,
 					//the garbage collector should remove it
+			else if (playerBullets.get(i).dead) //if the bullet's offscreen attribute is true
+				playerBullets.remove(i); //remove it from the ArrayList, since this is its only reference,
+					//the garbage collector should remove it
+		}
+		for (int i=0; i<player.mines.size(); i++)
+		{
+			player.mines.get(i).update();
 		}
 	}
 	
 	public Game() { //constructor that adds a key and mouse listener for control of the game
 		
 		try {
-			Map map2 = new Map("level1.json", 32);
+			Map map2 = new Map("level1.json", 32, player);
 			map = map2;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -118,7 +130,7 @@ public class Game extends JPanel
 				int yclick = e.getY(); //y coordinate of the click
 				double angle = Math.atan2(player.y-yclick, player.x-xclick)+Math.PI;
 				//gets the angle between the player and the click
-				playerBullets.add(new PlayerBullet(player.x, player.y, 5, angle)); //spawns a new player bullet
+				playerBullets.add(new PlayerBullet((player.x), (player.y), 2, angle)); //spawns a new player bullet
 			}
 
 			@Override

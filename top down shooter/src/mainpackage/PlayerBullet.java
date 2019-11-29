@@ -12,7 +12,7 @@ public class PlayerBullet extends Projectile { //extends the Projectile class
 	
 	BufferedImage bulletImage;
 	public PlayerBullet(int xin, int yin, int spdin, double anglein) {
-		super(xin, yin, spdin, anglein, 16, 16); // calls the superclass' constructor 
+		super(xin, yin, spdin, anglein, 16, 16, 2); // calls the superclass' constructor 
 		try 
 		{
 			BufferedImage temp = ImageIO.read(new File("bullet.png")); //imports the sprite as a buffered image
@@ -24,13 +24,14 @@ public class PlayerBullet extends Projectile { //extends the Projectile class
 		
 	}
 	
-	public void update()
+	public void update(Map m)
 	{
-		super.update(); //calls the superclass' update method
+		super.update(m); //calls the superclass' update method
 	}
 	
 	public void draw(Graphics2D g)
 	{
+		super.draw(g);
 		AffineTransform at = new AffineTransform();
 
 		//transforms are written backwards. The number represents the order in which its performed
