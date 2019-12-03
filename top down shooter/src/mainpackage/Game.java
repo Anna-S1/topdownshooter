@@ -28,6 +28,7 @@ public class Game extends JPanel
 	ArrayList<PlayerBullet> playerBullets = new ArrayList<>(); //creates an ArrayList that only allows
 	//PlayerBullet objects. This syntax allows the object's methods to still be used.
 	Map map;
+	Enemy enemy;
 	
 	public static void main(String[] args) throws InterruptedException, IOException 
 	{
@@ -107,6 +108,8 @@ public class Game extends JPanel
 			System.out.println("Error: " + e.getMessage());
 			e.printStackTrace();
 		}
+		
+		Enemy enemy = new Enemy(300, 300, player.x, player.y, map);
 		
 		addKeyListener(new KeyListener() {
 			@Override
