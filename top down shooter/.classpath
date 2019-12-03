@@ -6,6 +6,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="C:/Users/Will/git/topdownshooter2/top down shooter/json-simple-1.1 2.jar"/>
+	<classpathentry kind="lib" path="json-simple-1.1 2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
