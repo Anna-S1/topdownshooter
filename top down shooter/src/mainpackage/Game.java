@@ -66,7 +66,7 @@ public class Game extends JPanel
 		g2d.setColor(Color.WHITE);
 		for (int i=0; i<player.mines.size(); i++)
 		{
-			player.mines.get(i).draw(g2d);
+			player.mines.get(i).draw(g2d, map);
 		}
 		player.draw(g2d);
 		map.draw(g2d);

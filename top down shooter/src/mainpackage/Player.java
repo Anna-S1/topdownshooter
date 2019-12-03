@@ -180,7 +180,7 @@ public class Player {
 		case "Space":
 			if (spacePressed==false)
 			{
-				mines.add(new Mine(x, y));
+				mines.add(new Mine(x-16, y-16));
 			}
 		default:
 			break;
