@@ -108,6 +108,8 @@ public class Game extends JPanel
 			e.printStackTrace();
 		}
 		
+		Enemy enemy = new Enemy(300, 300, player.x, player.y, map);
+		
 		addKeyListener(new KeyListener() {
 			@Override
 			public void keyTyped(KeyEvent e) {}
